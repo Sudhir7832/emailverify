@@ -2,4 +2,4 @@
 nixPkgs = ["python3", "gunicorn"]
 
 [start]
-cmd = "gunicorn app:app -b 0.0.0.0:$PORT"
+cmd = "gunicorn app:app --bind 0.0.0.0:$PORT"
