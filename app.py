@@ -37,7 +37,7 @@ def is_role_based(email):
     local_part = email.split("@")[0].lower()
     return local_part in ROLE_PREFIXES
 
-def verify_mailbox_exists(email):
+'''def verify_mailbox_exists(email):
     domain = email.split("@")[-1]
     try:
         records = dns.resolver.resolve(domain, "MX")
@@ -53,7 +53,7 @@ def verify_mailbox_exists(email):
         return code == 250
     except:
         return False
-
+'''
 @app.route("/verify-email", methods=["GET"])
 def verify_email():
     email = request.args.get("email")
@@ -64,12 +64,12 @@ def verify_email():
     domain = email.split("@")[1] if "@" in email else ""
     domain_ok = domain_exists(domain) if syntax else False
     mx_ok = has_mx_record(domain) if domain_ok else False
-    mailbox_ok = verify_mailbox_exists(email) if mx_ok else False
+    #mailbox_ok = verify_mailbox_exists(email) if mx_ok else False
     disposable = is_disposable(email)
     role_based = is_role_based(email)
 
     # Simple scoring system
-    score = 100 if all([syntax, domain_ok, mx_ok, mailbox_ok, not disposable, not role_based]) else 0
+    score = 100 if all([syntax, domain_ok, mx_ok, not disposable, not role_based]) else 0
     status = "VALID" if score == 100 else "INVALID"
 
     response = {
@@ -78,7 +78,7 @@ def verify_email():
             "syntax": syntax,
             "domain_exists": domain_ok,
             "mx_records": mx_ok,
-            "mailbox_exists": mailbox_ok,
+            #"mailbox_exists": mailbox_ok,
             "is_disposable": disposable,
             "is_role_based": role_based
         },
